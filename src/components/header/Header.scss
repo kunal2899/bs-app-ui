@@ -1,0 +1,19 @@
+.app-header {
+    padding: 1em;
+    .title {
+        font-size: 1.5em;
+        font-weight: 600;
+        margin-left: 2em;
+    }
+    .back {
+        padding: 0 .5em;
+        font-size: 1.5em;
+        transition: .5s;
+        position: absolute;
+        width: 2em;
+        color: black;
+        &:hover {
+            padding: 0 0;
+        }
+    }
+}

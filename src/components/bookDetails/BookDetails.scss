@@ -1,0 +1,62 @@
+.book-detail {
+    padding: 2em;
+    .title {
+        font-size: 2em;
+        font-weight: 600;
+    }
+    .footer {
+        .author {
+            font-size: 1.2em;
+        }
+        .rating {
+            font-size: 1.5em;
+        }
+    }
+}
+
+.r-list {
+    .review {
+        border-radius: 10px;
+        margin: 1em;
+        padding: 1em;
+        .rating{
+            display: flex;
+            justify-content: center;
+            width: 30%;
+            font-size: 1.3em;
+            margin: 0;
+            span {
+                margin: 0 2px;
+            }
+        }
+        .r-desc{
+            width: 70%;
+        }
+    }
+}
+
+.m-body {
+    .r-desc {
+        height: 10em;
+        resize: none;
+        margin: 0 2em;
+        width: 90%;
+    }
+    .rating-stars {
+        font-size: 2em;
+        letter-spacing: 1em;
+        justify-content: center;
+        display: flex;
+    }
+    & > p {
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+}
+
+.m-footer {
+    .controls > input[type=button] {
+        margin: 0 5px;
+        width: 5em;
+    }
+}

@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router ,Route, Switch } from "react-router-dom";
+import NotFound from './components/NotFound/NotFound';
+import Main from "./components/main/Main";
+import { ToastContainer } from "react-toastify";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  return (<>
+    {/* Container element for toasts, used to inform about errors  */}
+    <ToastContainer limit={1}/>
+    {/* Routes */}
+    <Router>
+      <Switch>
+        <Route path="/books/:bookId" component={Main}/>
+        <Route path="/books" component={Main}/>
+        <Route path="/not-found" component={NotFound}/>
+        <Route path="/" component={Main}/>
+        <Route path="*" component={NotFound}/>
+      </Switch>
+    </Router>
+    </>
   );
 }
 
