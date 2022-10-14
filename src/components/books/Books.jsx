@@ -59,7 +59,7 @@ function Books(props) {
           <p className="text-wrap-dots">{book.description}</p>
         </div>
         <div className="side-content">
-          {props.renderRating(book)}
+          {props.renderRating(book.avg_rating)}
           <a href={`/books/${book.identifier}`}>View details</a>
         </div>
       </div>

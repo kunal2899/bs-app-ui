@@ -69,12 +69,10 @@ function Main() {
   }, [ fetchingData ]);
 
   //To render rating stars
-  const renderRating = (book, avg = true, value = 0) => {
+  const renderRating = value => {
     const getRatingValue = avgRating =>
       avgRating % 1 === 0 ? avgRating : avgRating.toFixed(1);
-    const ratingValue = avg
-      ? getRatingValue(parseFloat(book?.avg_rating))
-      : value;
+    const ratingValue = getRatingValue(parseFloat(value));
     return ratingValue === 0 ?
       <p className="rating">No reviews added</p>
     : (

@@ -18,6 +18,7 @@ function BookDetails(props) {
     const [ savingLoader, setSavingLoader ] = useState(false);
     const [ isReviewsExpanded, setExpandedReviews ] = useState(false);
     const [ reviews, setReviews ] = useState([]);
+    const [ avgRating, setAvgRating ] = useState(0);
 
     //Setting book data after books data is loaded
     useEffect(() => {
@@ -25,6 +26,7 @@ function BookDetails(props) {
             const book = props.books[bookId];
             setBook(book);
             setReviews(book?.reviews);
+            setAvgRating(book?.avg_rating);
         }
     }, [ props.isLoading ])
 
@@ -32,7 +34,10 @@ function BookDetails(props) {
     const saveReview = (review, closeModal) => {
         setSavingLoader(true);
         bookService.addReview(book.id, review).then(res => {
-            setReviews([ ...reviews, review ]);
+            //Updating review and rating data optimistically
+            const updatedReviews = [ ...reviews, review ];
+            setAvgRating(updatedReviews.map(review => review.rating).reduce((temp, rating) => temp+rating, 0)/updatedReviews.length);
+            setReviews(updatedReviews);
             setSavingLoader(false);
             closeModal();
         })
@@ -128,7 +133,7 @@ function BookDetails(props) {
             </p>
             <div className="footer d-flex justify-content-between align-items-center">
               <h4 className="author">Author - {book.author_name}</h4>
-              {props.renderRating(book)}
+              {props.renderRating(avgRating)}
             </div>
             <hr />
           </>
@@ -152,7 +157,7 @@ function BookDetails(props) {
               className="review d-flex align-items-center justify-content-between shadow rounded"
               key={review.id}
             >
-              {props.renderRating(null, false, review.rating)}
+              {props.renderRating(review.rating)}
               <div className="r-desc text-wrap-dots">{review.review}</div>
             </div>
           ));
