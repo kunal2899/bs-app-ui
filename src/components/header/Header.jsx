@@ -1,5 +1,6 @@
-import { useLocation } from 'react-router-dom';
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './Header.scss';
 
 function Header() {
@@ -8,7 +9,7 @@ function Header() {
     const isOnHomePage = () => pathname === BOOKS_PATHNAME;
     return ( 
         <div className='app-header shadow d-flex align-items-center border-solid'>
-            {!isOnHomePage() && <a className="back" href='/books'><i className="fas fa-arrow-left"></i></a>}
+            {!isOnHomePage() && <Link className="back" to='/books'><i className="fas fa-arrow-left"></i></Link>}
             <div className="title">{isOnHomePage() ? "Books Page" : "Book Details"}</div>
         </div>
     );

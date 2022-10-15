@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Switch, Route, Redirect, useHistory, useParams } from "react-router-dom";
+import { Switch, Route, Redirect, useHistory } from "react-router-dom";
 import Books from "../books/Books";
 import BookDetails from "./../bookDetails/BookDetails";
 import Header from "./../header/Header";
@@ -8,9 +8,18 @@ import ReviewRating from "../reviewRating/ReviewRating";
 import { bookService } from "../../services/bookService";
 
 function Main() {
-  const [ books, setBooks ] = useState([]);
-  const [ totalBooks, setTotalBooks ] = useState(1);
+  const defaultValues = {
+    LIMIT: 5,
+    ACTIVE_PAGE: 1,
+    TOTAL_BOOKS: 1,
+    BOOKS: []
+  }
+
+  const [ books, setBooks ] = useState(defaultValues.BOOKS);
+  const [ totalBooks, setTotalBooks ] = useState(defaultValues.TOTAL_BOOKS);
   const [ isLoading, setLoader ] = useState(false);
+  const [ limit, setLimit ] = useState(defaultValues.LIMIT);
+  const [ activePage, setActivePage ] = useState(defaultValues.ACTIVE_PAGE);
 
   //To toggle flag to fetch data from backend
   const [ fetchingData, fetchData ] = useState(true);
@@ -19,7 +28,6 @@ function Main() {
   const [ bookCache, updateCache ] = useState({});
 
   const { location } = useHistory();
-  const { bookId } = useParams();
 
   //To generate key for the bookCache
   const generateCacheKey = () => {
@@ -43,12 +51,8 @@ function Main() {
     if (fetchingData) {
       setLoader(true);
       const cacheKey = generateCacheKey();
-      //If key is already occupied that means we have to wait for API response 
-      if(bookCache[cacheKey] === "OCCUPIED") return;
-      if (!bookId && bookCache[cacheKey]) postFetchBooks(bookCache[cacheKey]);
+      if (bookCache[cacheKey]) postFetchBooks(bookCache[cacheKey]);
       else {
-        //Occupy this key to avoid re-assignment until API assigns
-        bookCache[cacheKey] = "OCCUPIED";
         bookService
           .getAllBooks(location.search)
           .then(res => {
@@ -59,11 +63,7 @@ function Main() {
             updateCache({ ...bookCache, [cacheKey]: booksData });
             postFetchBooks(booksData);
           })
-          .catch(err => {
-            setLoader(false);
-            //Free the occupied key in case of error
-            bookCache[cacheKey] = null;
-          });
+          .catch(err => setLoader(false));
       }
     }
   }, [ fetchingData ]);
@@ -95,9 +95,8 @@ function Main() {
           path="/books/:bookId"
           render={() => (
             <BookDetails
-              books={books}
-              fetchData={fetchData}
-              isLoading={isLoading}
+              bookCache={bookCache}
+              updateCache={updateCache}
               renderScreen={renderScreen}
               renderRating={renderRating}
             />
@@ -108,6 +107,10 @@ function Main() {
           path="/books"
           render={() => (
             <Books
+              activePage={activePage}
+              setActivePage={setActivePage}
+              limit={limit}
+              setLimit={setLimit}
               fetchingData={fetchingData}
               fetchData={fetchData}
               isLoading={isLoading}

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
@@ -19,27 +20,49 @@ function BookDetails(props) {
     const [ isReviewsExpanded, setExpandedReviews ] = useState(false);
     const [ reviews, setReviews ] = useState([]);
     const [ avgRating, setAvgRating ] = useState(0);
+    const [ isLoading, setLoader ] = useState(false);
 
-    //Setting book data after books data is loaded
-    useEffect(() => {
-        if(!props.isLoading) {
-            const book = props.books[bookId];
-            setBook(book);
-            setReviews(book?.reviews);
-            setAvgRating(book?.avg_rating);
-        }
-    }, [ props.isLoading ])
+    const setBookData = book => {
+      setBook(book);
+      setReviews(book.reviews);
+      setAvgRating(book.avg_rating);
+    }
+
+    //Setting book data
+    useEffect(() => {      
+      let book = _.values(props.bookCache).reduce((temp,data)=>({...temp, ...data}),{})[bookId];
+      if(book) setBookData(book);
+      else {
+        setLoader(true);
+        bookService.getBookById(bookId).then(res => {
+          book = res.data;
+          setBookData(book);
+          setLoader(false);
+        }).catch(err => setLoader(false));
+      }
+    }, [])
 
     //Adding review
     const saveReview = (review, closeModal) => {
         setSavingLoader(true);
         bookService.addReview(book.id, review).then(res => {
-            //Updating review and rating data optimistically
-            const updatedReviews = [ ...reviews, review ];
-            setAvgRating(updatedReviews.map(review => review.rating).reduce((temp, rating) => temp+rating, 0)/updatedReviews.length);
-            setReviews(updatedReviews);
-            setSavingLoader(false);
-            closeModal();
+          //Updating review and rating data optimistically
+          const updatedReviews = [ ...reviews, review ];
+          const updatedAvgRating = updatedReviews.map(review => review.rating).reduce((temp, rating) => temp+rating, 0)/updatedReviews.length;
+          setAvgRating(updatedAvgRating);
+          setReviews(updatedReviews);
+          const bookCache = { ...props.bookCache };
+          for(let page in bookCache) {
+            if(bookCache[page][bookId]){
+              bookCache[page][bookId] = { 
+                ...bookCache[page][bookId],
+                reviews: updatedReviews,
+                avg_rating: updatedAvgRating
+              }
+            }
+          }
+          setSavingLoader(false);
+          closeModal();
         })
     }
 
@@ -66,7 +89,7 @@ function BookDetails(props) {
                 Would you like to recommend to read this book
               </p>
               <div className="rating mb-4">
-                <p>Rating</p>
+                <p>Rating <span className='text-danger'>*</span></p>
                 <span className="rating-stars">
                   <ReviewRating
                     disabled={false}
@@ -76,7 +99,7 @@ function BookDetails(props) {
                 </span>
               </div>
               <div className="review">
-                <p>Review</p>
+              <p>Review <span className='text-danger'>*</span></p>
                 <textarea
                   className="r-desc form-control"
                   onChange={onReviewChange}
@@ -96,7 +119,7 @@ function BookDetails(props) {
                   type="button"
                   onClick={addReview}
                   value={savingLoader ? "Saving" : "Save"}
-                  className="btn btn-secondary"
+                  className="btn btn-dark"
                 />
                 <input
                   type="button"
@@ -180,7 +203,7 @@ function BookDetails(props) {
     return (
         <>
           {isAddReviewModalOpened && renderAddReviewModal()}
-          {props.isLoading ? (
+          {isLoading ? (
             props.renderScreen("Loading...")
           ) : book?.name ? (
             <div className="book-detail">

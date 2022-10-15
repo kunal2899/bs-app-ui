@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import BPagination from "../pagination/BPagination";
 import _ from "lodash";
 import './Books.scss';
 
 function Books(props) {
-  const defaultValues = {
-    TOTAL_PAGES: 1,
-    LIMIT: 5,
-    ACTIVE_PAGE: 1
-  }
-  const [ totalPages, setTotalPages ] = useState(defaultValues.TOTAL_PAGES);
-  const [ limit, setLimit ] = useState(defaultValues.LIMIT);
-  const [ activePage, setActivePage ] = useState(defaultValues.ACTIVE_PAGE);
+  const defaultTotalPages = 1;
+
+  const [ totalPages, setTotalPages ] = useState(defaultTotalPages);
   const [ pageChange, setPageChange ] = useState(false);
 
   const { location, push } = useHistory();
@@ -20,19 +15,19 @@ function Books(props) {
   //Updating the state according to query params provided
   useEffect(() => {
     const query = new URLSearchParams(location.search);
-    query.has("page") && setActivePage(parseInt(query.get("page")));
-    query.has("limit") && setLimit(parseInt(query.get("limit")));
+    query.has("page") && props.setActivePage(parseInt(query.get("page")));
+    query.has("limit") && props.setLimit(parseInt(query.get("limit")));
   }, [])
 
   //Updating value of totalPages in case of any change in books data
   useEffect(() => {
-    setTotalPages(Math.ceil(props.totalBooks/limit));
-  }, [props.books])
+    setTotalPages(Math.ceil(props.totalBooks/props.limit));
+  }, [props.totalBooks, props.limit])
 
   //Toggling flag to fetch books data on page change
   useEffect(() => {
     if(pageChange) {
-      push({ search: `?page=${activePage}&limit=${limit}` });
+      push({ search: `?page=${props.activePage}&limit=${props.limit}` });
       if(!props.fetching) props.fetchData(true);
       setPageChange(false);
     }
@@ -40,11 +35,12 @@ function Books(props) {
 
   const handlePageChange = (e, viaControls=null) => {
     //If through next/prev controls
-    if(!viaControls) setActivePage(parseInt(e.target.innerHTML));
+    if(!viaControls) props.setActivePage(parseInt(e.target.innerHTML));
     else {
+      const activePage = props.activePage;
       switch(viaControls) {
-        case "prev": activePage > 1 && setActivePage(activePage-1); break;
-        case "next": activePage < totalPages && setActivePage(activePage+1); break;
+        case "prev": activePage > 1 && props.setActivePage(activePage-1); break;
+        case "next": activePage < totalPages && props.setActivePage(activePage+1); break;
         default: return;
       }
     }
@@ -60,7 +56,7 @@ function Books(props) {
         </div>
         <div className="side-content">
           {props.renderRating(book.avg_rating)}
-          <a href={`/books/${book.identifier}`}>View details</a>
+          <Link to={`/books/${book.identifier}`}>View details</Link>
         </div>
       </div>
     ));
@@ -75,12 +71,12 @@ function Books(props) {
       ) : (
         <>
           <div className="books-list mb-3">{renderBooksList()}</div>
-          {props.totalBooks > limit && (
+          {props.totalBooks > props.limit && (
             <div className="d-flex justify-content-center w-100">
               <BPagination
                 handlePageChange={handlePageChange}
                 pages={totalPages}
-                active={activePage}
+                active={props.activePage}
               />
             </div>
           )}
