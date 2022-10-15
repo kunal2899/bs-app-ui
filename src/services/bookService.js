@@ -1,6 +1,6 @@
 import http from "./httpService";
 
-const baseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+const baseUrl = process.env.REACT_APP_API_BASE_URL || "https://book-selling-app-api.herokuapp.com/api";
 
 const getAllBooks = (query) => {
     return http.get(`${baseUrl}/books${query}`);
