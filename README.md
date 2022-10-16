@@ -1,6 +1,7 @@
-# Getting Started with Create React App
+# Book Selling App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is the front-end part of app. For back-end part, please refer to [bs-app-api](https://github.com/kunal2899/bs-app-api#readme) repository.\
+🚀 Live on [https://book-selling-app.herokuapp.com](https://book-selling-app.herokuapp.com)
 
 ## Available Scripts
 
