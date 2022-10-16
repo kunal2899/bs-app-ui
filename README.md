@@ -13,19 +13,19 @@ You only need Node.js, git and a node global package installed in your environme
 
 
 ### Node installation
-- #### Windows
+  #### Windows
 
   Simply download the installer package from the official [Node.js](https://nodejs.org/) website.\
   As `npm` might require it, make sure `git` is accessible in your PATH.
 
-- #### Linux
+  #### Linux
 
   Run the following commands on your terminal to quickly and easily install `nodejs` and `npm` with `apt install`
 
       $ sudo apt install nodejs
       $ sudo apt install npm
 
-- #### Other Operating Systems
+  #### Other Operating Systems
   On the official [Node.js](https://nodejs.org/en/download/) and [NPM](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) websites, you can get more details regarding the installation process for other operating systems.
 
 You should be able to run the following commands on your terminal if the installation went well.
